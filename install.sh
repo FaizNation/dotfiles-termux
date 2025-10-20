@@ -1,5 +1,36 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
+echo "Memulai instalasi dotfiles..."
+
+# ==================================
+# BAGIAN 1: INSTALASI PAKET
+# ==================================
+echo "Menjalankan pkg update..."
+pkg update -y
+
+echo "Menginstal paket dari packages.txt..."
+
+# Memeriksa apakah file packages.txt ada
+if [ ! -f ~/dotfiles/packages.txt ]; then
+    echo "Peringatan: File packages.txt tidak ditemukan. Melewati instalasi paket."
+else
+    # Membaca file packages.txt baris per baris dan menginstal
+    while read -r package; do
+      # Hanya instal jika paket belum terinstal
+      if ! pkg -s "$package" | grep -q "installed"; then
+        echo "Menginstal $package..."
+        pkg install -y "$package"
+      else
+        echo "$package sudah terinstal."
+      fi
+    done < ~/dotfiles/packages.txt
+    echo "Instalasi paket selesai."
+fi
+
+
+# ==================================
+# BAGIAN 2: MEMBUAT SYMLINKS
+# ==================================
 echo "Membuat symlinks untuk Zsh dan Termux..."
 
 # Pastikan direktori .termux ada
